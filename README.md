@@ -1,5 +1,7 @@
 # Blur Generator
 
+[![Test](https://github.com/NatLee/Blur-Generator/actions/workflows/test.yml/badge.svg)](https://github.com/NatLee/Blur-Generator/actions/workflows/test.yml)[![Release](https://github.com/NatLee/Blur-Generator/actions/workflows/release.yml/badge.svg)](https://github.com/NatLee/Blur-Generator/actions/workflows/release.yml)
+
 This tool is for generating blur on images.
 
 There are 3 types of blur modes of `motion`, `lens`, or `gaussian`.
