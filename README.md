@@ -14,6 +14,8 @@ We can use the results on model training or something else.
 pip install blurgenerator
 ```
 
+Check it on [Pypi](https://pypi.org/project/BlurGenerator/).
+
 ## Usage
 
 ```bash
@@ -44,7 +46,7 @@ optional arguments:
 
 - Original image
 
-![original image](./doc/test.png)
+![original image](https://github.com/NatLee/Blur-Generator/blob/main/doc/test.png?raw=true)
 
 - Motion blur
 
@@ -57,7 +59,7 @@ img = cv2.imread('test.png')
 result = motion_blur(img, size=100, angle=30)
 ```
 
-![motion blur image](./doc/motion.png)
+![motion blur image](https://github.com/NatLee/Blur-Generator/blob/main/doc/motion.png?raw=true)
 
 - Lens blur
 
@@ -70,7 +72,7 @@ img = cv2.imread('test.png')
 result = lens_blur(img, radius=5, components=4, exposure_gamma=2)
 ```
 
-![lens blur image](./doc/lens.png)
+![lens blur image](https://github.com/NatLee/Blur-Generator/blob/main/doc/lens.png?raw=true)
 
 - Gaussian blur
 
@@ -83,4 +85,4 @@ img = cv2.imread('test.png')
 result = gaussian_blur(img, 100)
 ```
 
-![gaussian blur image](./doc/gaussian.png)
+![gaussian blur image](https://github.com/NatLee/Blur-Generator/blob/main/doc/gaussian.png?raw=true)
