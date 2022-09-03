@@ -1,17 +1,14 @@
 """
 Blur Maker
-
 """
 import argparse
-
 from pathlib import Path
 
 import cv2
 
-from blur_tools import motion_blur, lens_blur, gaussian_blur
+from blurgenerator import motion_blur, lens_blur, gaussian_blur
 
-
-if __name__ == "__main__":
+def main():
 
     parser = argparse.ArgumentParser()
 
@@ -40,23 +37,23 @@ if __name__ == "__main__":
                 img = img / 255.
 
                 if args.type not in ['motion', 'lens', 'gaussian']:
-                    print('No type has been selected. Please specific `motion`, `lens`, or `gaussian`.')
+                    print('----- No type has been selected. Please specific `motion`, `lens`, or `gaussian`.')
                 else:
                     if args.type == 'motion':
                         result = motion_blur(img, size=args.motion_blur_size, angle=args.motion_blur_angle)
 
                     elif args.type == 'lens':
-                        result = lens_blur(img, radius=5, components=4, exposure_gamma=2)
+                        result = lens_blur(img, radius=args.lens_radius, components=args.lens_components, exposure_gamma=args.lens_exposure_gamma)
 
                     elif args.type == 'gaussian':
-                        result = gaussian_blur(img, 100)
+                        result = gaussian_blur(img, args.gaussian_kernel)
 
                     cv2.imwrite(args.output, result*255)
 
             else:
-                print('Only support common types of image `.jpg` and `.png`.')
+                print('----- Only support common types of image `.jpg` and `.png`.')
 
         else:
-            print('File not exists!')
+            print('----- File not exists!')
     else:
-        print('Please specific image for input.')
+        print('----- Please specific image for input.')

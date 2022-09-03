@@ -1,18 +1,23 @@
-
 # Blur Generator
 
-Generate blur on image.
+This tool is for generating blur on images.
 
-There are 3 types of blur can be used with `motion`, `lens`, or `gaussian`.
+There are 3 types of blur modes of `motion`, `lens`, or `gaussian`.
 
-We can use the results on model training or something.
+We can use the results on model training or something else.
+
+## Installation
+
+```bash
+pip install blurgenerator
+```
 
 ## Usage
 
 ```bash
-usage: main.py [-h] [--input INPUT] [--output OUTPUT] [--type TYPE] [--motion_blur_size MOTION_BLUR_SIZE]
-               [--motion_blur_angle MOTION_BLUR_ANGLE] [--lens_radius LENS_RADIUS] [--lens_components LENS_COMPONENTS]
-               [--lens_exposure_gamma LENS_EXPOSURE_GAMMA] [--gaussian_kernel GAUSSIAN_KERNEL]
+usage: blurgenerator [-h] [--input INPUT] [--output OUTPUT] [--type TYPE] [--motion_blur_size MOTION_BLUR_SIZE] [--motion_blur_angle MOTION_BLUR_ANGLE]
+                     [--lens_radius LENS_RADIUS] [--lens_components LENS_COMPONENTS] [--lens_exposure_gamma LENS_EXPOSURE_GAMMA]
+                     [--gaussian_kernel GAUSSIAN_KERNEL]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -33,27 +38,47 @@ optional arguments:
                         Kernel for gaussian. Default is 100.
 ```
 
-## Results
+## Example and Result
 
-* Original image
+- Original image
 
 ![original image](./doc/test.png)
 
-* Motion blur
+- Motion blur
 
-`python3 main.py --type motion --input ./doc/test.png --output ./doc/motion.png`
+`blurgenerator --type motion --input ./doc/test.png --output ./doc/motion.png`
+
+```python
+import cv2
+from blurgenerator import motion_blur
+img = cv2.imread('test.png')
+result = motion_blur(img, size=100, angle=30)
+```
 
 ![motion blur image](./doc/motion.png)
 
-* Lens blur
+- Lens blur
 
-`python3 main.py --type lens --input ./doc/test.png  --output ./doc/lens.png`
+`blurgenerator--type lens --input ./doc/test.png --output ./doc/lens.png`
+
+```python
+import cv2
+from blurgenerator import lens_blur
+img = cv2.imread('test.png')
+result = lens_blur(img, radius=5, components=4, exposure_gamma=2)
+```
 
 ![lens blur image](./doc/lens.png)
 
-* Gaussian blur
+- Gaussian blur
 
-`python3 main.py --type gaussian --input ./doc/test.png --output ./doc/gaussian.png`
+`blurgenerator --type gaussian --input ./doc/test.png --output ./doc/gaussian.png`
+
+```python
+import cv2
+from blurgenerator import gaussian_blur
+img = cv2.imread('test.png')
+result = gaussian_blur(img, 100)
+```
 
 ![gaussian blur image](./doc/gaussian.png)
-
