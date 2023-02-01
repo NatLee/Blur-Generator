@@ -5,3 +5,4 @@ include *.bat
 include LICENSE
 recursive-include tests test*.py
 recursive-include doc *.png
+recursive-include doc *.jpg
