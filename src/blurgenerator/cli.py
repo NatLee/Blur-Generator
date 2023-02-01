@@ -5,14 +5,18 @@ import argparse
 from pathlib import Path
 
 import cv2
+import numpy as np
 
 from blurgenerator import motion_blur, lens_blur, gaussian_blur
+from blurgenerator.depth_mapping import blur_with_depth_layers
 
 def main():
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--input', type=str, default=None, help='Specific path of image as `input`.')
+    parser.add_argument('--input_depth_map', type=str, default=None, help='Specific path of depth image as `input_depth_map`.')
+
     parser.add_argument('--output', type=str, default='./result.png', help='Specific path for `output`. Default is `./result.png`.')
 
     parser.add_argument('--type', type=str, default='motion', help='Blur type of `motion`, `lens`, or `gaussian`. Default is `motion`.')
@@ -40,15 +44,31 @@ def main():
                     print('----- No type has been selected. Please specific `motion`, `lens`, or `gaussian`.')
                 else:
                     if args.type == 'motion':
-                        result = motion_blur(img, size=args.motion_blur_size, angle=args.motion_blur_angle)
+                        def blur_job(img, size=args.motion_blur_size):
+                            return motion_blur(img, size=size, angle=args.motion_blur_angle)
 
                     elif args.type == 'lens':
-                        result = lens_blur(img, radius=args.lens_radius, components=args.lens_components, exposure_gamma=args.lens_exposure_gamma)
+                        def blur_job(img, radius=args.lens_radius):
+                            return lens_blur(img, radius=radius, components=args.lens_components, exposure_gamma=args.lens_exposure_gamma)
 
                     elif args.type == 'gaussian':
-                        result = gaussian_blur(img, args.gaussian_kernel)
+                        def blur_job(img, kernel=args.gaussian_kernel):
+                            return gaussian_blur(img, kernel)
 
-                    cv2.imwrite(args.output, result*255)
+                    if args.type in ['motion', 'lens', 'gaussian']:
+                        depth_map_path = args.input_depth_map
+                        if depth_map_path is None:
+                            result = blur_job(img)
+                        else:
+                            result = np.zeros_like(img)
+                            # need check path exists
+                            depth_map = cv2.imread(depth_map_path)
+                            mask_blur_amounts = blur_with_depth_layers(depth_map)
+                            for mask, blur_amount in mask_blur_amounts:
+                                slice = blur_job(img, blur_amount)
+                                layer = cv2.bitwise_and(slice, slice, mask = mask[:,:,0])
+                                result = cv2.add(result, layer, dtype=0)
+                        cv2.imwrite(args.output, result)
 
             else:
                 print('----- Only support common types of image `.jpg` and `.png`.')
