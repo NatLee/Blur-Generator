@@ -121,6 +121,8 @@ def filter_task(idx, channel, img_channel, component, component_params):
 
 def lens_blur(img, radius=3, components=5, exposure_gamma=5):
 
+    img = img/255.
+
     img = np.ascontiguousarray(img.transpose(2,0,1), dtype=np.float32)
     # Obtain component parameters / scale values
     parameters, scale = get_parameters(component_count = components)
