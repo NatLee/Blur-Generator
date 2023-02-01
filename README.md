@@ -50,7 +50,7 @@ usage: blurgenerator [-h] [--input INPUT] [--input_depth_map INPUT_DEPTH_MAP] [-
 
 - Original image
 
-![original image](./doc/test.png)
+![original image](https://github.com/NatLee/Blur-Generator/raw/main/doc/test.png)
 
 #### Usage
 
@@ -66,7 +66,7 @@ result = motion_blur(img, size=100, angle=30)
 cv2.imwrite('./output.png', result)
 ```
 
-![motion blur image](./doc/motion.png)
+![motion blur image](https://github.com/NatLee/Blur-Generator/raw/main/doc/motion.png)
 
 - Lens blur
 
@@ -80,7 +80,7 @@ result = lens_blur(img, radius=5, components=4, exposure_gamma=2)
 cv2.imwrite('./output.png', result)
 ```
 
-![lens blur image](./doc/lens.png)
+![lens blur image](https://github.com/NatLee/Blur-Generator/raw/main/doc/lens.png)
 
 - Gaussian blur
 
@@ -94,7 +94,7 @@ result = gaussian_blur(img, 100)
 cv2.imwrite('./output.png', result)
 ```
 
-![gaussian blur image](./doc/gaussian.png)
+![gaussian blur image](https://github.com/NatLee/Blur-Generator/raw/main/doc/gaussian.png)
 
 ### With depth map
 
@@ -102,11 +102,11 @@ Feature from this [issue](https://github.com/NatLee/Blur-Generator/issues/1).
 
 - Original image
 
-![photo](./doc/depth-test.jpg)
+![photo](https://github.com/NatLee/Blur-Generator/raw/main/doc/depth-test.jpg)
 
 - Depth map
 
-![depth map](./doc/depth-map-test.png)
+![depth map](https://github.com/NatLee/Blur-Generator/raw/main/doc/depth-map-test.png)
 
 #### Usage
 
@@ -130,7 +130,7 @@ result = motion_blur_with_depth_map(
 cv2.imwrite('./output.png', result)
 ```
 
-![depth motion blur image](./doc/depth-motion-output.png)
+![depth motion blur image](https://github.com/NatLee/Blur-Generator/raw/main/doc/depth-motion-output.png)
 
 - Lens blur with depth map
 
@@ -153,7 +153,7 @@ result = lens_blur_with_depth_map(
 cv2.imwrite('./output.png', result)
 ```
 
-![depth lens blur image](./doc/depth-lens-output.png)
+![depth lens blur image](https://github.com/NatLee/Blur-Generator/raw/main/doc/depth-lens-output.png)
 
 - Gaussian blur with depth map
 
@@ -175,4 +175,26 @@ result = gaussian_blur_with_depth_map(
 cv2.imwrite('./output.png', result)
 ```
 
-![depth gaussian blur image](./doc/depth-gaussian-output.png)
+![depth gaussian blur image](https://github.com/NatLee/Blur-Generator/raw/main/doc/depth-gaussian-output.png)
+
+## Contributor
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center"><a href="https://github.com/NatLee"><img src="https://avatars.githubusercontent.com/u/10178964?v=3?s=100" width="100px;" alt="Nat Lee"/><br /><sub><b>Nat Lee</b></sub></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+## LICENSE
+
+[MIT](LICENSE)
