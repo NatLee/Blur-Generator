@@ -1,14 +1,14 @@
 """
 Lens blur generator
-
 """
-
+import os
 import math
 from functools import reduce
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import cv2
 import numpy as np
-from scipy import signal
 
 # These scales bring the size of the below components to roughly the specified radius - I just hard coded these
 kernel_scales = [1.4,1.2,1.2,1.2,1.2,1.2]
@@ -17,7 +17,7 @@ kernel_scales = [1.4,1.2,1.2,1.2,1.2,1.2]
 # These parameters are drawn from <http://yehar.com/blog/?p=1495>
 kernel_params = [
                 # 1-component
-                [[0.862325, 1.624835, 0.767583, 1.862321]],          
+                [[0.862325, 1.624835, 0.767583, 1.862321]],
 
                 # 2-components
                 [[0.886528, 5.268909, 0.411259, -0.548794],
@@ -95,48 +95,83 @@ def multiply_kernel(kernel):
     b = np.repeat(kernel.transpose(), kernel_size, 1)
     return np.multiply(a,b)
 
+# ----------------------------------------------------------------
+
+def filter_task(idx, channel, img_channel, component, component_params):
+    """
+    https://github.com/Davide-sd/GIMP-lens-blur/blob/master/GIMP-lens-blur.py#L188
+    """
+    component_real = np.real(component)
+    component_imag = np.imag(component)
+
+    component_real_t = component_real.transpose()
+    component_imag_t = component_imag.transpose()
+    # first convolution
+    inter_real = cv2.filter2D(img_channel, -1, component_real)
+    inter_imag = cv2.filter2D(img_channel, -1, component_imag)
+    # second convolution (see NOTE above, here inter_ is f, component_ is g)
+    final_1 = cv2.filter2D(inter_real, -1, component_real_t)
+    final_2 = cv2.filter2D(inter_real, -1, component_imag_t)
+    final_3 = cv2.filter2D(inter_imag, -1, component_real_t)
+    final_4 = cv2.filter2D(inter_imag, -1, component_imag_t)
+    final = final_1 - final_4 + 1j * (final_2 + final_3)
+    weight_sum = weighted_sum(final, component_params)
+    # return index, channel No. and sum of weights
+    return idx, channel, weight_sum
 
 def lens_blur(img, radius=3, components=5, exposure_gamma=5):
 
     img = np.ascontiguousarray(img.transpose(2,0,1), dtype=np.float32)
-
-
     # Obtain component parameters / scale values
     parameters, scale = get_parameters(component_count = components)
-
     # Create each component for size radius, using scale and other component parameters
     components = [complex_kernel_1d(radius, scale, component_params['a'], component_params['b']) for component_params in parameters]
-
     # Normalise all kernels together (the combination of all applied kernels in 2D must sum to 1)
     components = normalise_kernels(components, parameters)
-
     # Increase exposure to highlight bright spots
     img = np.power(img, exposure_gamma)
-    
-    # Process RGB channels for all components
-    component_output = list()
-    for component, component_params in zip(components, parameters):
-        channels = list()
-        for channel in range(img.shape[0]):
-            inter = signal.convolve2d(img[channel], component, boundary='symm', mode='same')
-            channels.append(signal.convolve2d(inter, component.transpose(), boundary='symm', mode='same'))
 
-        # The final component output is a stack of RGB, with weighted sums of real and imaginary parts
-        component_image = np.stack([weighted_sum(channel, component_params) for channel in channels])
-        component_output.append(component_image)
+    # Process RGB channels for all components
+    # NOTE:
+    # Let f,g be two complex signals. The convolution f*g can be split as:
+    # Re(f)*Re(g) - Im(f)*Im(g) + i [Re(f)*Im(g) + Im(f)*Re(g)]
+    # where Re(), Im() represents the real and imaginary parts respectively
+
+    # Process RGB channels for all components
+    component_output = []
+
+    task_out = defaultdict(list)
+
+    with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+        tasks = []
+        for idx, (component, component_params) in enumerate(zip(components, parameters)):
+            for channel in range(img.shape[0]):
+                tasks.append(
+                    executor.submit(
+                        filter_task, idx, channel, img[channel], component, component_params
+                    )
+                )
+        for task in as_completed(tasks):
+            idx, channel, weight_sum = task.result()
+            task_out[idx].append((channel, weight_sum))
+
+    # sort out the output from thread pool & resort with original order
+    component_images = []
+    for idx, values in task_out.items():
+        component_image = np.stack([weight_sum for _, weight_sum in sorted(values, key=lambda x: x[0])])
+        component_images.append((idx, component_image))
+
+    # The final component output is a stack of RGB, with weighted sums of real and imaginary parts
+    component_output = [component_image for _, component_image in sorted(component_images, key=lambda x: x[0])]
 
     # Add all components together
     output_image = reduce(np.add, component_output)
-
     # Reverse exposure
-    output_image = np.clip(output_image, 0, None) 
+    output_image = np.clip(output_image, 0, None)
     output_image = np.power(output_image, 1.0/exposure_gamma)
-
     # Avoid out of range values - generally this only occurs with small negatives
     # due to imperfect complex kernels
     output_image = np.clip(output_image, 0, 1)
-
-    #output_image *= 255
-    #output_image = output_image.transpose(1,2,0).astype(np.uint8)
-    output_image = output_image.transpose(1,2,0)
+    output_image *= 255
+    output_image = output_image.transpose(1,2,0).astype(np.uint8)
     return output_image
