@@ -70,7 +70,7 @@ cv2.imwrite('./output.png', result)
 
 - Lens blur
 
-`blurgenerator--type lens --input ./doc/test.png --output ./doc/lens.png`
+`blurgenerator --type lens --input ./doc/test.png --output ./doc/lens.png`
 
 ```python
 import cv2
