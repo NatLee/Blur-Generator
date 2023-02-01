@@ -37,7 +37,7 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.7',
-    install_requires=['opencv-python', 'scipy'],
+    install_requires=['opencv-python'],
     extras_require={
         'dev': ['check-manifest'],
         # 'test': ['coverage'],
