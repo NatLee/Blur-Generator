@@ -103,7 +103,7 @@ def main():
             out = cv2.add(out, layer, dtype=0)
         return out
 
-    result = blur_with_depth(img, depth_map, num_layers=5, min_blur=1, max_blur=50)
+    result = blur_with_depth(img, depth_map, num_layers=10, min_blur=1, max_blur=50)
     cv2.imwrite(args.output, result)
 
     return
