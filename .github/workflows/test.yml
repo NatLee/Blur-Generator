@@ -15,14 +15,52 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.6, 3.7, 3.8, 3.9]
-
+        python: [3.7, 3.8, 3.9, '3.10', '3.11']
+        os:
+            -   name: Linux
+                runs-on: ubuntu-latest
+                python_platform: linux
+            -   name: Windows
+                runs-on: windows-latest
+                python_platform: win32
+            -   name: macOS
+                runs-on: macos-latest
+                python_platform: darwin
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
+      - name: Install Tox and other packages
+        run: pip install tox
+      - name: Run Tox
+        # Run tox using the version of Python in `PATH`
+        run: tox -e py
+
+  build36:
+      name: ${{ matrix.os.name }} ${{ matrix.python-version }}
+      runs-on: ${{ matrix.os.runs-on }}
+      strategy:
+          matrix:
+              python-version: [ 3.6 ]
+              os:
+                  -   name: Linux
+                      runs-on: ubuntu-20.04
+                      python_platform: linux
+                  -   name: Windows
+                      runs-on: windows-latest
+                      python_platform: win32
+                  -   name: macOS
+                      runs-on: macos-latest
+                      python_platform: darwin
+      steps:
+      -   uses: actions/checkout@v3
+      -   name: Set up Python 3.6
+          uses: actions/setup-python@v4
+          with:
+              python-version: 3.6
+              architecture: x64
       - name: Install Tox and other packages
         run: pip install tox
       - name: Run Tox
