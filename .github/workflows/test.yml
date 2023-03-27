@@ -39,7 +39,6 @@ jobs:
         run: tox -e py
 
   build36:
-      name: ${{ matrix.os.name }} ${{ matrix.python-version }}
       runs-on: ${{ matrix.os.runs-on }}
       strategy:
           matrix:
@@ -59,8 +58,7 @@ jobs:
       -   name: Set up Python 3.6
           uses: actions/setup-python@v4
           with:
-              python-version: 3.6
-              architecture: x64
+              python-version: ${{ matrix.python }}
       - name: Install Tox and other packages
         run: pip install tox
       - name: Run Tox
