@@ -5,8 +5,8 @@ with open('README.md', 'r', encoding='utf-8') as fh:
 
 with open('requirements.txt', 'r', encoding='utf-8') as f:
     requirements = []
-    for line in f.readline():
-        requirements.append(line.strip())
+    for line in f.readlines():
+        requirements.append(line)
 
 setuptools.setup(
     name='BlurGenerator',
