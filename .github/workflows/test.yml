@@ -58,9 +58,10 @@ jobs:
       -   name: Set up Python 3.6
           uses: actions/setup-python@v4
           with:
-              python-version: ${{ matrix.python }}
+            python-version: 3.6
+            architecture: x64
       - name: Install Tox and other packages
         run: pip install tox
       - name: Run Tox
         # Run tox using the version of Python in `PATH`
-        run: python3 -m tox -e py
+        run: python -m tox -e py
