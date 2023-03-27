@@ -18,6 +18,8 @@ There are 3 types of blur modes of `motion`, `lens`, or `gaussian`.
 
 We can use the results on model training or something else.
 
+> You can find a simply use case with deep learning in https://github.com/NatLee/simply-blur-detector
+
 ## Installation
 
 ```bash
