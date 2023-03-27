@@ -3,6 +3,11 @@ import setuptools
 with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
+with open('requirements.txt', 'r', encoding='utf-8') as f:
+    requirements = []
+    for line in f.readline():
+        requirements.append(line.strip())
+
 setuptools.setup(
     name='BlurGenerator',
     author='Nat Lee',
@@ -40,7 +45,7 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.6',
-    install_requires=['opencv-python'],
+    install_requires=requirements,
     extras_require={
         'dev': ['check-manifest'],
         # 'test': ['coverage'],
