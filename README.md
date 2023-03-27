@@ -1,6 +1,16 @@
 # Blur Generator
 
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/BlurGenerator.svg)](https://pypi.python.org/pypi/BlurGenerator/)[![PyPI implementation](https://img.shields.io/pypi/implementation/BlurGenerator.svg)](https://pypi.python.org/pypi/BlurGenerator/)
+
 [![Test](https://github.com/NatLee/Blur-Generator/actions/workflows/test.yml/badge.svg)](https://github.com/NatLee/Blur-Generator/actions/workflows/test.yml)[![Release](https://github.com/NatLee/Blur-Generator/actions/workflows/release.yml/badge.svg)](https://github.com/NatLee/Blur-Generator/actions/workflows/release.yml)
+
+[![PyPI status](https://img.shields.io/pypi/status/BlurGenerator.svg)](https://pypi.python.org/pypi/BlurGenerator/)[![PyPI license](https://img.shields.io/pypi/l/BlurGenerator.svg)](https://pypi.python.org/pypi/BlurGenerator/)
+
+[![PyPI version fury.io](https://badge.fury.io/py/BlurGenerator.svg)](https://pypi.python.org/pypi/BlurGenerator/)
+
+[![PyPI download month](https://img.shields.io/pypi/dm/BlurGenerator.svg)](https://pypi.python.org/pypi/BlurGenerator/)[![PyPI download week](https://img.shields.io/pypi/dw/BlurGenerator.svg)](https://pypi.python.org/pypi/BlurGenerator/)[![PyPI download day](https://img.shields.io/pypi/dd/BlurGenerator.svg)](https://pypi.python.org/pypi/BlurGenerator/)
+
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
 This tool is for generating blur on images.
 
