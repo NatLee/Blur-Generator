@@ -1,7 +1,7 @@
 """
 Blur maker init
 """
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 from .motion_blur import motion_blur
 from .lens_blur import lens_blur
