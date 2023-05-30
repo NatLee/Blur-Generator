@@ -207,6 +207,11 @@ cv2.imwrite('./output.png', result)
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
+## Reference
+
+- [Circularly symmetric convolution and lens blur](http://yehar.com/blog/?p=1495)
+
+
 ## LICENSE
 
 [MIT](LICENSE)
