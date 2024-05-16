@@ -121,13 +121,13 @@ def filter_task(idx: int, channel: int, img_channel: np.ndarray, component: np.n
     component_real_t = component_real.transpose()
     component_imag_t = component_imag.transpose()
     
-    inter_real = cv2.filter2D(img_channel, -1, component_real)
-    inter_imag = cv2.filter2D(img_channel, -1, component_imag)
+    inter_real = cv2.filter2D(img_channel, -1, component_real, borderType=cv2.BORDER_REPLICATE)
+    inter_imag = cv2.filter2D(img_channel, -1, component_imag, borderType=cv2.BORDER_REPLICATE)
     
-    final_1 = cv2.filter2D(inter_real, -1, component_real_t)
-    final_2 = cv2.filter2D(inter_real, -1, component_imag_t)
-    final_3 = cv2.filter2D(inter_imag, -1, component_real_t)
-    final_4 = cv2.filter2D(inter_imag, -1, component_imag_t)
+    final_1 = cv2.filter2D(inter_real, -1, component_real_t, borderType=cv2.BORDER_REPLICATE)
+    final_2 = cv2.filter2D(inter_real, -1, component_imag_t, borderType=cv2.BORDER_REPLICATE)
+    final_3 = cv2.filter2D(inter_imag, -1, component_real_t, borderType=cv2.BORDER_REPLICATE)
+    final_4 = cv2.filter2D(inter_imag, -1, component_imag_t, borderType=cv2.BORDER_REPLICATE)
     
     final = final_1 - final_4 + 1j * (final_2 + final_3)
     weight_sum = weighted_sum(final, component_params)
