@@ -41,7 +41,7 @@ usage: blurgenerator [-h] [--input INPUT] [--input_depth_map INPUT_DEPTH_MAP] [-
   --motion_blur_angle MOTION_BLUR_ANGLE
                         Angle for motion blur. Default is 30.
   --lens_radius LENS_RADIUS
-                        Radius for lens blur. Default is 5.
+                        Radius for lens blur. Default is 5.0.
   --lens_components LENS_COMPONENTS
                         Components for lens blur. Default is 4.
   --lens_exposure_gamma LENS_EXPOSURE_GAMMA
