@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--motion_blur_size', type=int, default=100, help='Size for motion blur. Default is 100.')
     parser.add_argument('--motion_blur_angle', type=int, default=30, help='Angle for motion blur. Default is 30.')
 
-    parser.add_argument('--lens_radius', type=int, default=5, help='Radius for lens blur. Default is 5.')
+    parser.add_argument('--lens_radius', type=float, default=5.0, help='Radius for lens blur. Default is 5.0.')
     parser.add_argument('--lens_components', type=int, default=4, help='Components for lens blur. Default is 4.')
     parser.add_argument('--lens_exposure_gamma', type=int, default=2, help='Exposure gamma for lens blur. Default is 2.')
 

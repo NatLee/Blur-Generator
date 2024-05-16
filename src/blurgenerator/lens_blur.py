@@ -1,6 +1,7 @@
 """
 Lens blur generator
 """
+from typing import Tuple, Dict, List
 import os
 import math
 from functools import reduce
@@ -50,76 +51,93 @@ kernel_params = [
                 [2.201904, 19.032909, -0.152784, -0.107988]]]
 
 # Obtain specific parameters and scale for a given component count
-def get_parameters(component_count = 2):
+def get_parameters(component_count: int = 2) -> Tuple[List[Dict[str, float]], float]:
+    """
+    Obtain specific parameters and scale for a given component count.
+    """
     parameter_index = max(0, min(component_count - 1, len(kernel_params)))
-    parameter_dictionaries = [dict(zip(['a','b','A','B'], b)) for b in kernel_params[parameter_index]]
-    return (parameter_dictionaries, kernel_scales[parameter_index])
+    parameter_dictionaries = [dict(zip(['a', 'b', 'A', 'B'], b)) for b in kernel_params[parameter_index]]
+    return parameter_dictionaries, kernel_scales[parameter_index]
 
 # Produces a complex kernel of a given radius and scale (adjusts radius to be more accurate)
 # a and b are parameters of this complex kernel
-def complex_kernel_1d(radius, scale, a, b):
-    kernel_radius = radius
+def complex_kernel_1d(radius: float, scale: float, a: float, b: float) -> np.ndarray:
+    """
+    Produces a complex kernel of a given radius and scale (adjusts radius to be more accurate).
+    """
+    kernel_radius = int(math.ceil(radius))
     kernel_size = kernel_radius * 2 + 1
-    ax = np.arange(-kernel_radius, kernel_radius + 1., dtype=np.float32)
-    ax = ax * scale * (1 / kernel_radius)
-    kernel_complex = np.zeros((kernel_size), dtype=np.complex64)
+    ax = np.linspace(-radius, radius, kernel_size, dtype=np.float32)
+    ax = ax * scale * (1 / radius)
+    kernel_complex = np.zeros((kernel_size,), dtype=np.complex64)
     kernel_complex.real = np.exp(-a * (ax**2)) * np.cos(b * (ax**2))
     kernel_complex.imag = np.exp(-a * (ax**2)) * np.sin(b * (ax**2))
     return kernel_complex.reshape((1, kernel_size))
 
-def normalise_kernels(kernels, params):
-    # Normalises with respect to A*real+B*imag
+
+def normalise_kernels(kernels: List[np.ndarray], params: List[Dict[str, float]]) -> np.ndarray:
+    """
+    Normalises the kernels with respect to A*real + B*imag.
+    """
     total = 0
 
-    for k,p in zip(kernels, params):
-        # 1D kernel - applied in 2D
+    for k, p in zip(kernels, params):
         for i in range(k.shape[1]):
             for j in range(k.shape[1]):
-                # Complex multiply and weighted sum
-                total += p['A'] * (k[0,i].real*k[0,j].real - k[0,i].imag*k[0,j].imag) + p['B'] * (k[0,i].real*k[0,j].imag + k[0,i].imag*k[0,j].real)
+                total += p['A'] * (k[0, i].real * k[0, j].real - k[0, i].imag * k[0, j].imag) + \
+                         p['B'] * (k[0, i].real * k[0, j].imag + k[0, i].imag * k[0, j].real)
 
     scalar = 1 / math.sqrt(total)
     kernels = np.asarray(kernels) * scalar
 
     return kernels
 
-# Combine the real and imaginary parts of an image, weighted by A and B
-def weighted_sum(kernel, params):
+def weighted_sum(kernel: np.ndarray, params: Dict[str, float]) -> np.ndarray:
+    """
+    Combine the real and imaginary parts of an image, weighted by A and B.
+    """
     return np.add(kernel.real * params['A'], kernel.imag * params['B'])
 
 # Produce a 2D kernel by self-multiplying a 1d kernel. This would be slower to use
 # than the separable approach, mostly for visualisation below
-def multiply_kernel(kernel):
+def multiply_kernel(kernel: np.ndarray) -> np.ndarray:
+    """
+    Produce a 2D kernel by self-multiplying a 1D kernel.
+    """
     kernel_size = kernel.shape[1]
     a = np.repeat(kernel, kernel_size, 0)
     b = np.repeat(kernel.transpose(), kernel_size, 1)
-    return np.multiply(a,b)
+    return np.multiply(a, b)
 
 # ----------------------------------------------------------------
 
-def filter_task(idx, channel, img_channel, component, component_params):
+def filter_task(idx: int, channel: int, img_channel: np.ndarray, component: np.ndarray, component_params: Dict[str, float]) -> Tuple[int, int, np.ndarray]:
     """
-    https://github.com/Davide-sd/GIMP-lens-blur/blob/master/GIMP-lens-blur.py#L188
+    Perform convolution with the complex kernel components on the image channel.
     """
     component_real = np.real(component)
     component_imag = np.imag(component)
 
     component_real_t = component_real.transpose()
     component_imag_t = component_imag.transpose()
-    # first convolution
-    inter_real = cv2.filter2D(img_channel, -1, component_real)
-    inter_imag = cv2.filter2D(img_channel, -1, component_imag)
-    # second convolution (see NOTE above, here inter_ is f, component_ is g)
-    final_1 = cv2.filter2D(inter_real, -1, component_real_t)
-    final_2 = cv2.filter2D(inter_real, -1, component_imag_t)
-    final_3 = cv2.filter2D(inter_imag, -1, component_real_t)
-    final_4 = cv2.filter2D(inter_imag, -1, component_imag_t)
+    
+    inter_real = cv2.filter2D(img_channel, -1, component_real, borderType=cv2.BORDER_REPLICATE)
+    inter_imag = cv2.filter2D(img_channel, -1, component_imag, borderType=cv2.BORDER_REPLICATE)
+    
+    final_1 = cv2.filter2D(inter_real, -1, component_real_t, borderType=cv2.BORDER_REPLICATE)
+    final_2 = cv2.filter2D(inter_real, -1, component_imag_t, borderType=cv2.BORDER_REPLICATE)
+    final_3 = cv2.filter2D(inter_imag, -1, component_real_t, borderType=cv2.BORDER_REPLICATE)
+    final_4 = cv2.filter2D(inter_imag, -1, component_imag_t, borderType=cv2.BORDER_REPLICATE)
+    
     final = final_1 - final_4 + 1j * (final_2 + final_3)
     weight_sum = weighted_sum(final, component_params)
-    # return index, channel No. and sum of weights
+    
     return idx, channel, weight_sum
 
-def lens_blur(img, radius=3, components=5, exposure_gamma=5):
+def lens_blur(img: np.ndarray, radius: float = 3.0, components: int = 5, exposure_gamma: float = 5.0) -> np.ndarray:
+    """
+    Apply lens blur to the input image.
+    """
 
     img = img/255.
 
